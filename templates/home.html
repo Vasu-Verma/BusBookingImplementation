@@ -1,0 +1,43 @@
+{% if Method2 != "POST" %}
+<form action="" method="post">{% csrf_token %}
+   	<h3>Source</h3>
+   	<select name="dropdown">
+   		{% for node in Vertex %}
+   			<option value="{{node}}">{{node}}</opttion>
+   		{% endfor %}
+   	</select>
+   	<br><br>
+   	<h3>Destination</h3>
+   	<select name="dropdown2">
+   		{% for node in Vertex %}
+   			<option value="{{node}}">{{node}}</opttion>
+   		{% endfor %}
+   	</select>
+   	<br><br>
+   	<input type="submit" value="Submit" />
+</form>
+{% endif %}
+
+<h2>{{ text }}</h2>
+{% for paths in Paths %}
+	{% for node in paths.path %}
+		{{node}}
+	{% endfor %}
+	<br>
+	DISTANCE = {{paths.weight}} kms
+   <br>Recommended Buses For You :
+
+{% if paths.bus|length == 1 %}
+   {% for i in paths.bus %}
+         <br> Take the Bus: {{i.Number}} from {{paths.path.0}} to {{paths.path|last}} <button>BOOK BUS NOW</button><br>
+   {% endfor %}
+{% elif paths.bus|length > 1 %}
+   {% for edge in paths.zip %}
+      <br>Board the Bus:{{edge.0}} at {{edge.1}} and deboard at {{edge.2}}
+   {% endfor %} <button>BOOK TICKETS FOR JOURNEY NOW</button><br>
+{% else %}
+   <br> Sorry No Buses Found For this path. However try Using someother path for your journey
+{% endif %}
+	<br><br>
+
+{% endfor %} 
