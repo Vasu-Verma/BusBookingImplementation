@@ -13,31 +13,48 @@
    			<option value="{{node}}">{{node}}</opttion>
    		{% endfor %}
    	</select>
+      <br><br>
+      <h3>ADULT PASSENGERS</h3><input id="Adult" name="Adult" type="number" value="1" min="1" max="10"/>
+      <br>
+      <h3>CHILDREN PASSENGERS</h3><input id="Children" name="Children" type="number" value="0" min="0" max="10" />
    	<br><br>
    	<input type="submit" value="Submit" />
 </form>
-{% endif %}
 
-<h2>{{ text }}</h2>
-{% for paths in Paths %}
-	{% for node in paths.path %}
-		{{node}}
-	{% endfor %}
-	<br>
-	DISTANCE = {{paths.weight}} kms
-   <br>Recommended Buses For You :
-
-{% if paths.bus|length == 1 %}
-   {% for i in paths.bus %}
-         <br> Take the Bus: {{i.Number}} from {{paths.path.0}} to {{paths.path|last}} <button>BOOK BUS NOW</button><br>
-   {% endfor %}
-{% elif paths.bus|length > 1 %}
-   {% for edge in paths.zip %}
-      <br>Board the Bus:{{edge.0}} at {{edge.1}} and deboard at {{edge.2}}
-   {% endfor %} <button>BOOK TICKETS FOR JOURNEY NOW</button><br>
 {% else %}
-   <br> Sorry No Buses Found For this path. However try Using someother path for your journey
-{% endif %}
-	<br><br>
+   <br>DTC FARE RATES<br>
+   <br>ADULTS<br>
+   0-4kms : Rs.5/- <br>
+   4-10kms: Rs.10/- <br>
+   >10kms: Rs.15/- <br>
+   <br><br>Children<br>
+   0-4kms : Rs.3/- <br>
+   4-10kms: Rs.5/- <br>
+   >10kms: Rs.8/- <br>
 
-{% endfor %} 
+
+   <h2>{{ text }}</h2>
+   <h3> {{Adults}} Adults and {{Children}} Children </h3>
+   {% for paths in Paths %}
+   	{% for node in paths.path %}
+   		{{node}}
+   	{% endfor %}
+   	<br>
+   	DISTANCE = {{paths.weight}} kms
+      <br>Recommended Buses For You :
+
+
+   {% if paths.bus|length > 0 %}
+      {% for edge in paths.zip %}
+         {% if edge|length == 6 %}
+            <br>Board the Bus:{{edge.0}} at {{edge.1}} and deboard at {{edge.2}}-------->{{edge.3}} kms. <br>Cost:Rs. {{edge.4}} for Adults and Rs. {{edge.5}} for Children
+         {% endif %}
+      {% endfor %} 
+      <br>TOTAL COST OF YOUR JOURNEY: Rs.{{ paths.zip.1 }}<br><button>BOOK TICKETS FOR JOURNEY NOW</button><br>
+   {% else %}
+      <br> Sorry No Buses Found For this path. However try Using someother path for your journey
+   {% endif %}
+   	<br><br>
+
+   {% endfor %}
+{% endif %} 

@@ -6,26 +6,7 @@ import itertools
 
 
 Stops = []
-class NewPath:
-	def __init__(self, path, weight, bus, checkpoints):
-		self.path = path
-		self.weight = weight
-		self.bus = bus
-		self.checkpoints = checkpoints
-	def zip(self):
-		dict = {}
-		i = 0
-		listA = []
-		for buses in self.bus:
-			list2 = []
-			list2.append(buses.Number)
-			list2.append(self.checkpoints[i])
-			list2.append(self.checkpoints[i+1])
-			print list2
-			listA.append(list2)
-			i = i + 1
-		print listA
-		return listA		
+
 
 class Vertex:
 	def __init__(self, node):
@@ -78,6 +59,54 @@ class Graph:
 
 	def get_vertices(self):
 		return self.vert_dict.keys()
+
+class NewPath:
+	def __init__(self, path, weight, bus, checkpoints, Graph, Adults, Children):
+		self.path = path
+		self.weight = weight
+		self.bus = bus
+		self.checkpoints = checkpoints
+		self.Graph = Graph
+		self.Adults = Adults
+		self.Children = Children
+		self.listA = zip()
+
+
+	def zip(self):
+		dict = {}
+		i = 0
+		listA = []
+
+		for buses in self.bus:
+			list2 = []
+			list2.append(buses.Number)
+			list2.append(self.checkpoints[i])
+			list2.append(self.checkpoints[i+1])
+			for v in self.Graph:
+				if(v.get_id()==self.checkpoints[i]):
+					for w in v.get_connections():
+						if(w.get_id()==self.checkpoints[i+1]):
+							list2.append(v.get_weight(w))
+			if(list2[3]>0 and list2[3]<=4):
+				list2.append(5)
+				list2.append(3)
+			elif(list2[3]>4 and list2[3]<=10):
+				list2.append(10)
+				list2.append(5)
+			elif(list2[3]>10):
+				list2.append(15)
+				list2.append(8)
+
+			listA.append(list2)
+			i = i + 1
+		sum = 0
+		sum2=0
+		for listitem in listA:
+			sum = sum+listitem[4]
+			sum2 = sum2+listitem[5]
+		listA.append(sum*int(self.Adults)+sum2*int(self.Children))
+		print listA
+		return listA
 
 def find_all_paths(graph, start, end, path=[]):
 	path = path + [start]
@@ -164,8 +193,13 @@ def homepage(request):
 		form = MyForm(request.POST)
 		A = request.POST.get('dropdown')
 		B = request.POST.get('dropdown2')
+		C = request.POST.get('Adult')
+		D = request.POST.get('Children')
+		print D
 		x = find_all_paths(DICT,A,B)
-		
+		if(D==None):
+			D = 0
+		print D
 
 
 		i = 0
@@ -237,13 +271,15 @@ def homepage(request):
 			else:
 				BusDatabase = []
 			# print Stops
-			PATHS.append(NewPath(path,sum,BusDatabase,Stops))
+			PATHS.append(NewPath(path,sum,BusDatabase,Stops,g,C,D))
 
 
 			context = {
 				"text":"Showing Route From " + A + " to "  + B,
 				"Method2":"POST",
 				"Paths":PATHS,
+				"Adults":C,
+				"Children":D,
 			}
 	else:
 		Vertex = Vertices.objects.all()
