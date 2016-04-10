@@ -69,24 +69,42 @@ class NewPath:
 		self.Graph = Graph
 		self.Adults = Adults
 		self.Children = Children
-		self.listA = zip()
-
+		if(len(bus)!=0):
+			self.listA = zip()
+		else:
+			self.listA = []
 
 	def zip(self):
 		dict = {}
 		i = 0
 		listA = []
 
+		sum2 = 0
 		for buses in self.bus:
 			list2 = []
 			list2.append(buses.Number)
 			list2.append(self.checkpoints[i])
 			list2.append(self.checkpoints[i+1])
-			for v in self.Graph:
-				if(v.get_id()==self.checkpoints[i]):
-					for w in v.get_connections():
-						if(w.get_id()==self.checkpoints[i+1]):
-							list2.append(v.get_weight(w))
+			temp = self.checkpoints[i]
+			sum2 = 0
+			j = 0
+
+			while(temp!=self.checkpoints[i+1]):
+				flag=0
+				for v in self.Graph:
+					if(v.get_id()==self.path[j]):
+						for w in v.get_connections():
+							if(w.get_id()==self.path[j+1]):
+								sum2 = sum2 + v.get_weight(w)
+								j = j+1
+								temp = self.path[j]
+								flag=1
+								break
+					if(flag==1):
+						break
+
+			list2.append(sum2)
+			print list2
 			if(list2[3]>0 and list2[3]<=4):
 				list2.append(5)
 				list2.append(3)
@@ -133,18 +151,19 @@ def FindBusCombinations(Path,Buses,BusCombination,Stops):
 		k = 1
 		Busk =  Buses[0]
 		BusDB = []
+		k = 0
 		for Bus2 in Buses:
 			temp = Bus2.Path.split(",")
 			i=0
 			BusDB = []
 			flag=0
-			k = 0
 			# print Path[0],Path[1]
 			for i in range(0,len(temp)-1):
 				# print "Temps",temp[i],temp[i+1]
 				if(temp[i]==Path[0] and temp[i+1]==Path[1]):
 					flag=1
 					j=i
+					# print temp[i],temp[i+1],Bus2
 					# print Path,Bus2.Number
 					break
 					# BusDB.append(Bus2.Number)
@@ -155,11 +174,13 @@ def FindBusCombinations(Path,Buses,BusCombination,Stops):
 				while(i<len(Path) and j<len(temp) and temp[j] == Path[i]):
 					i = i+1
 					j = j+1
+				# print i
 				if(i>k):
 					k = i
 					Busk = Bus2
+					# print k,Busk
 		# print "k",k
-		if k<=1:
+		if k<1:
 			# print 2
 			return []
 		RemStations = Path[k-1::]
@@ -168,6 +189,7 @@ def FindBusCombinations(Path,Buses,BusCombination,Stops):
 		# print 3
 		# print List
 		# print RemStations
+		# print List,RemStations
 		Stops.append(RemStations[0])
 		return FindBusCombinations(RemStations,Buses,List,Stops)
 	
@@ -195,11 +217,11 @@ def homepage(request):
 		B = request.POST.get('dropdown2')
 		C = request.POST.get('Adult')
 		D = request.POST.get('Children')
-		print D
+		# print A
+		# print B
 		x = find_all_paths(DICT,A,B)
 		if(D==None):
 			D = 0
-		print D
 
 
 		i = 0
@@ -217,6 +239,7 @@ def homepage(request):
 						for w in v.get_connections():
 							if(w.get_id()==dest):
 								sum = sum + v.get_weight(w)
+
 			BusDatabase = []
 			# for Bus2 in Buses:
 			# 	temp = Bus2.Path.split(",")
@@ -244,9 +267,11 @@ def homepage(request):
 							flag=1
 							# print path,Bus2.Number
 							j=i
-							# print path,Bus2.Number
 							break
+							# print path,Bus2.Number
+							
 							# BusDB.append(Bus2.Number)
+					# print "i",i,path[0],path[1],flag
 					i=0
 
 					if(flag==1):
@@ -257,6 +282,7 @@ def homepage(request):
 							k = i
 							Busk = Bus2
 							# print k
+				# print Busk,flag
 				Stops.append(path[0])
 				Stops.append(path[k-1])
 				RemStations = path[k-1::]
@@ -265,11 +291,26 @@ def homepage(request):
 				BusComb = []
 				# print path,"BUSKY: " + Busk.Number, k
 				BusDB =  BusDB + FindBusCombinations(RemStations,Buses,BusComb,Stops)
+				print "Stops",Stops
+				# print BusDB
 			# print "BUS",BusDB 
-			if(BusDB!=[] and BusDB[-1].Path.split(",")[-1]==path[-1]):
+			flag2=0
+			flag3=0
+			if(BusDB!=[]):
+				temporaryArray = BusDB[-1].Path.split(",")
+				for pathe in temporaryArray:
+					if(pathe==Stops[-1]):
+						flag3=1
+					if(pathe == path[-1] and flag3==1):
+						flag2=1
+			
+			if(BusDB!=[] and flag2==1):
 				BusDatabase = BusDB
+				# print BusDatabase
 			else:
 				BusDatabase = []
+				# print BusDatabase
+			# print BusDatabase
 			# print Stops
 			PATHS.append(NewPath(path,sum,BusDatabase,Stops,g,C,D))
 

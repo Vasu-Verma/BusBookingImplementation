@@ -37,7 +37,7 @@
    <h3> {{Adults}} Adults and {{Children}} Children </h3>
    {% for paths in Paths %}
    	{% for node in paths.path %}
-   		{{node}}
+   		{{node}},
    	{% endfor %}
    	<br>
    	DISTANCE = {{paths.weight}} kms
@@ -50,7 +50,7 @@
             <br>Board the Bus:{{edge.0}} at {{edge.1}} and deboard at {{edge.2}}-------->{{edge.3}} kms. <br>Cost:Rs. {{edge.4}} for Adults and Rs. {{edge.5}} for Children
          {% endif %}
       {% endfor %} 
-      <br>TOTAL COST OF YOUR JOURNEY: Rs.{{ paths.zip.1 }}<br><button>BOOK TICKETS FOR JOURNEY NOW</button><br>
+      <br>TOTAL COST OF YOUR JOURNEY: Rs.{{ paths.zip|last }}<br><button>BOOK TICKETS FOR JOURNEY NOW</button><br>
    {% else %}
       <br> Sorry No Buses Found For this path. However try Using someother path for your journey
    {% endif %}
