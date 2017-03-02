@@ -78,7 +78,7 @@ class NewPath:
 		dict = {}
 		i = 0
 		listA = []
-
+		j = 0
 		sum2 = 0
 		for buses in self.bus:
 			list2 = []
@@ -87,7 +87,6 @@ class NewPath:
 			list2.append(self.checkpoints[i+1])
 			temp = self.checkpoints[i]
 			sum2 = 0
-			j = 0
 
 			while(temp!=self.checkpoints[i+1]):
 				flag=0
@@ -102,7 +101,6 @@ class NewPath:
 								break
 					if(flag==1):
 						break
-
 			list2.append(sum2)
 			print list2
 			if(list2[3]>0 and list2[3]<=4):
@@ -220,6 +218,7 @@ def homepage(request):
 		# print A
 		# print B
 		x = find_all_paths(DICT,A,B)
+		print x
 		if(D==None):
 			D = 0
 
@@ -313,15 +312,13 @@ def homepage(request):
 			# print BusDatabase
 			# print Stops
 			PATHS.append(NewPath(path,sum,BusDatabase,Stops,g,C,D))
-
-
-			context = {
-				"text":"Showing Route From " + A + " to "  + B,
-				"Method2":"POST",
-				"Paths":PATHS,
-				"Adults":C,
-				"Children":D,
-			}
+		context = {
+			"text":"Showing Route From " + A + " to "  + B,
+			"Method2":"POST",
+			"Paths":PATHS,
+			"Adults":C,
+			"Children":D,
+		}
 	else:
 		Vertex = Vertices.objects.all()
 		Vertex2 = []
